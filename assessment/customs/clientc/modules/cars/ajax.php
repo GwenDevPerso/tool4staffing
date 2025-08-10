@@ -1,41 +1,27 @@
 <?php
-// Récupérer juste le cookie pour affichage (pas pour requête)
 $currentClient = $_COOKIE['currentClient'] ?? 'clientc';
 
-// URL relative vers l'API depuis le dossier customs/clientc/modules/cars/
-$apiUrl = '../../../../api/get_cars.php';
+$apiUrl = 'http://localhost:8000/api/get_cars.php';
 ?>
 
 <div class="space-y-4">
-    <h2 class="text-xl font-bold text-orange-600">🏎️ Voitures Client C - Sport</h2>
+    <h2 class="text-xl font-bold text-orange-600">🏎️ Voitures Client C</h2>
 
-    <!-- Debug: afficher le client actuel -->
-    <div class="text-xs text-gray-500 mb-2">
-        Cookie: <strong><?php echo htmlspecialchars($currentClient); ?></strong> |
-        API: <strong><?php echo htmlspecialchars($apiUrl); ?></strong>
-    </div>
-
-    <!-- Zone pour afficher les erreurs -->
     <div id="errorBox" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
         <p id="errorMessage" class="text-red-600"></p>
     </div>
 
-    <!-- Zone pour afficher les voitures -->
     <div id="carsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
-    <!-- Footer de collection -->
     <div id="carsFooter" class="hidden bg-orange-50 border border-orange-200 rounded-lg p-3">
         <p id="carsCount" class="text-sm text-orange-600"></p>
     </div>
 </div>
 
-<!-- jQuery depuis CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        console.log("Tentative de connexion à:", "<?php echo $apiUrl; ?>");
-
         $.ajax({
             url: "<?php echo $apiUrl; ?>",
             method: "GET",
@@ -44,13 +30,9 @@ $apiUrl = '../../../../api/get_cars.php';
             },
             dataType: "json",
             success: function(response) {
-                console.log("Réponse API:", response);
-
                 if (response.success) {
-                    // Cacher les erreurs
                     $("#errorBox").addClass("hidden");
 
-                    // Remplir la liste des voitures
                     const cars = response.cars || [];
                     const container = $("#carsContainer");
                     container.empty();
@@ -85,11 +67,9 @@ $apiUrl = '../../../../api/get_cars.php';
                     `);
                     });
 
-                    // Afficher le footer avec le nombre de voitures
                     $("#carsFooter").removeClass("hidden");
                     $("#carsCount").html(`🏁 Collection Sport - Client C <span class="font-medium">(${cars.length} voiture${cars.length > 1 ? 's' : ''})</span>`);
 
-                    // Ajouter les gestionnaires d'événements pour les clics sur les voitures
                     addCarClickHandlers('orange');
                 } else {
                     $("#errorBox").removeClass("hidden");
@@ -114,10 +94,10 @@ $apiUrl = '../../../../api/get_cars.php';
             }
         });
     });
-
-    // Créer la fonction loadDynamicContent pour ce client
-    window.loadDynamicContent = createLoadDynamicContent('clientc');
 </script>
 
-<!-- Inclure le script des fonctions de détails des voitures -->
 <script src="../../../../customs/car-details.js"></script>
+
+<script>
+    window.loadDynamicContent = createLoadDynamicContent('clientc', 'cars');
+</script>

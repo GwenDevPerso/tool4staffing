@@ -185,8 +185,7 @@ function getClientName($customer)
     </div>
 </div>
 
-<!-- Inclure le script des fonctions de détails des voitures -->
-<script src="car-details.js"></script>
+<script src="http://localhost:8000/customs/car-details.js"></script>
 
 <script>
     // Fonction pour revenir à la liste

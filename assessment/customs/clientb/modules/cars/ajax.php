@@ -1,19 +1,11 @@
 <?php
-// Récupérer juste le cookie pour affichage (pas pour requête)
 $currentClient = $_COOKIE['currentClient'] ?? 'clientb';
 
-// URL relative vers l'API depuis le dossier customs/clientb/modules/cars/
-$apiUrl = '../../../../api/get_cars.php';
+$apiUrl = 'http://localhost:8000/api/get_cars.php';
 ?>
 
 <div class="space-y-4">
-    <h2 class="text-xl font-bold text-green-600">🚙 Voitures Client B - Écologique</h2>
-
-    <!-- Debug: afficher le client actuel -->
-    <div class="text-xs text-gray-500 mb-2">
-        Cookie: <strong><?php echo htmlspecialchars($currentClient); ?></strong> |
-        API: <strong><?php echo htmlspecialchars($apiUrl); ?></strong>
-    </div>
+    <h2 class="text-xl font-bold text-green-600">🚙 Voitures Client B</h2>
 
     <!-- Zone pour afficher les erreurs -->
     <div id="errorBox" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
@@ -34,8 +26,6 @@ $apiUrl = '../../../../api/get_cars.php';
 
 <script>
     $(document).ready(function() {
-        console.log("Tentative de connexion à:", "<?php echo $apiUrl; ?>");
-
         $.ajax({
             url: "<?php echo $apiUrl; ?>",
             method: "GET",
@@ -47,10 +37,8 @@ $apiUrl = '../../../../api/get_cars.php';
                 console.log("Réponse API:", response);
 
                 if (response.success) {
-                    // Cacher les erreurs
                     $("#errorBox").addClass("hidden");
 
-                    // Remplir la liste des voitures
                     const cars = response.cars || [];
                     const container = $("#carsContainer");
                     container.empty();
@@ -80,11 +68,9 @@ $apiUrl = '../../../../api/get_cars.php';
                     `);
                     });
 
-                    // Afficher le footer avec le nombre de voitures
                     $("#carsFooter").removeClass("hidden");
                     $("#carsCount").html(`🌱 Gamme Écologique - Client B <span class="font-medium">(${cars.length} voiture${cars.length > 1 ? 's' : ''})</span>`);
 
-                    // Ajouter les gestionnaires d'événements pour les clics sur les voitures
                     addCarClickHandlers('green');
                 } else {
                     $("#errorBox").removeClass("hidden");
@@ -109,10 +95,10 @@ $apiUrl = '../../../../api/get_cars.php';
             }
         });
     });
-
-    // Créer la fonction loadDynamicContent pour ce client
-    window.loadDynamicContent = createLoadDynamicContent('clientb');
 </script>
 
-<!-- Inclure le script des fonctions de détails des voitures -->
 <script src="../../../../customs/car-details.js"></script>
+
+<script>
+    window.loadDynamicContent = createLoadDynamicContent('clientb', 'cars');
+</script>

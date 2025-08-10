@@ -1,19 +1,11 @@
 <?php
-// Récupérer juste le cookie pour affichage (pas pour requête)
 $currentClient = $_COOKIE['currentClient'] ?? 'clienta';
 
-// URL relative vers l'API depuis le dossier customs/clienta/modules/cars/
-$apiUrl = '../../../../api/get_cars.php';
+$apiUrl = 'http://localhost:8000/api/get_cars.php';
 ?>
 
 <div class="space-y-4">
-    <h2 class="text-xl font-bold text-blue-600">🚗 Voitures Client A - Premium</h2>
-
-    <!-- Debug: afficher le client actuel -->
-    <div class="text-xs text-gray-500 mb-2">
-        Cookie: <strong><?php echo htmlspecialchars($currentClient); ?></strong> |
-        API: <strong><?php echo htmlspecialchars($apiUrl); ?></strong>
-    </div>
+    <h2 class="text-xl font-bold text-blue-600">🚗 Voitures Client A</h2>
 
     <!-- Zone pour afficher les erreurs -->
     <div id="errorBox" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
@@ -33,9 +25,18 @@ $apiUrl = '../../../../api/get_cars.php';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        console.log("Tentative de connexion à:", "<?php echo $apiUrl; ?>");
+    function getColor(car) {
+        const year = new Date().getFullYear() - car.annee;
+        if (year > 10) {
+            return 'red';
+        } else if (year < 2) {
+            return 'green';
+        } else {
+            return "#FFF";
+        }
+    }
 
+    $(document).ready(function() {
         $.ajax({
             url: "<?php echo $apiUrl; ?>",
             method: "GET",
@@ -44,13 +45,9 @@ $apiUrl = '../../../../api/get_cars.php';
             },
             dataType: "json",
             success: function(response) {
-                console.log("Réponse API:", response);
-
                 if (response.success) {
-                    // Cacher les erreurs
                     $("#errorBox").addClass("hidden");
 
-                    // Remplir la liste des voitures
                     const cars = response.cars || [];
                     const container = $("#carsContainer");
                     container.empty();
@@ -62,6 +59,10 @@ $apiUrl = '../../../../api/get_cars.php';
                     }
 
                     cars.forEach(car => {
+                        car.couleur = getColor(car);
+                    });
+
+                    cars.forEach(car => {
                         container.append(`
                         <div class="car-card bg-blue-50 p-4 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer" 
                              data-car-id="${car.id}"
@@ -69,6 +70,8 @@ $apiUrl = '../../../../api/get_cars.php';
                              role="button"
                              aria-label="Voir les détails de ${car.nom}">
                             <div class="flex items-center gap-2 mb-2">
+                                <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: ${car.couleur};"></div>
+
                                 <h3 class="font-semibold text-blue-800">${car.nom}</h3>
                                 <span class="text-xs text-blue-600">→</span>
                             </div>
@@ -81,11 +84,9 @@ $apiUrl = '../../../../api/get_cars.php';
                     `);
                     });
 
-                    // Afficher le footer avec le nombre de voitures
                     $("#carsFooter").removeClass("hidden");
                     $("#carsCount").html(`✨ Collection Premium - Client A <span class="font-medium">(${cars.length} voiture${cars.length > 1 ? 's' : ''})</span>`);
 
-                    // Ajouter les gestionnaires d'événements pour les clics sur les voitures
                     addCarClickHandlers('blue');
                 } else {
                     $("#errorBox").removeClass("hidden");
@@ -110,10 +111,10 @@ $apiUrl = '../../../../api/get_cars.php';
             }
         });
     });
-
-    // Créer la fonction loadDynamicContent pour ce client
-    window.loadDynamicContent = createLoadDynamicContent('clienta');
 </script>
 
-<!-- Inclure le script des fonctions de détails des voitures -->
 <script src="../../../../customs/car-details.js"></script>
+
+<script>
+    window.loadDynamicContent = createLoadDynamicContent('clienta', 'cars');
+</script>
