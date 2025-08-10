@@ -29,12 +29,16 @@ function loadCarDetails(carId, clientColor = 'blue') {
         },
         error: function(xhr, status, error) {
             console.error('Erreur lors du chargement des détails:', error);
-            $('.dynamic-div').html(`
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <p class="text-red-600">Erreur lors du chargement des détails: ${error}</p>
-                    <button onclick="location.reload()" class="mt-2 bg-${clientColor}-500 hover:bg-${clientColor}-600 text-white px-4 py-2 rounded">Réessayer</button>
-                </div>
-            `);
+            const $box = $('<div/>', { class: 'bg-red-50 border border-red-200 rounded-lg p-4' });
+            $('<p/>', { class: 'text-red-600' })
+                .text(`Erreur lors du chargement des détails: ${String(error)}`)
+                .appendTo($box);
+            $('<button/>', {
+                class: `mt-2 bg-${clientColor}-500 hover:bg-${clientColor}-600 text-white px-4 py-2 rounded`,
+                text: 'Réessayer',
+                click: () => location.reload()
+            }).appendTo($box);
+            $('.dynamic-div').empty().append($box);
         }
     });
 }

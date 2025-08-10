@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js">
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
 
 </head>
 
@@ -97,16 +98,25 @@
                     },
                     dataType: 'json',
                     success: function(response) {
-                        if (response.success) {
+                        if (response && response.success && typeof response.content === 'string') {
                             dynamicDiv.html(response.content);
                             console.log('Contenu chargé avec succès');
-                        } else {
-                            dynamicDiv.html(`<div class="text-red-500 p-4">Erreur: ${response.error}</div>`);
+                            return;
                         }
+                        const $box = $('<div/>', {
+                                class: 'text-red-500 p-4'
+                            })
+                            .text(`Erreur: ${String((response && response.error) || 'Inconnue')}`);
+                        dynamicDiv.empty().append($box);
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur AJAX:', error);
-                        dynamicDiv.html(`<div class="text-red-500 p-4">Erreur lors du chargement du contenu: ${error}</div>`);
+                        dynamicDiv.empty().append(
+                            $('<div/>', {
+                                class: 'text-red-500 p-4'
+                            })
+                            .text(`Erreur lors du chargement du contenu: ${String(error)}`)
+                        );
                     }
                 });
             }
